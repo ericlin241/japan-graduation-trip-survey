@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { REGIONS, INTENTS, DAYS_OPTIONS, STYLES, TRANSPORTS } from '../utils/constants';
-import { Send, CheckCircle2, AlertCircle, Car, MapPin, Sparkles, User, Calendar, Compass } from 'lucide-react';
+import { Send, CheckCircle2, AlertCircle, Car, MapPin, Sparkles, User, Calendar, Compass, UserCheck } from 'lucide-react';
 
 interface Props {
   onSubmit: (data: any) => Promise<{ success: boolean; error?: string }>;
   onSuccessNavigate?: () => void;
+  volunteerDrivers?: string[];
 }
 
-export const SurveyForm: React.FC<Props> = ({ onSubmit, onSuccessNavigate }) => {
+export const SurveyForm: React.FC<Props> = ({ onSubmit, onSuccessNavigate, volunteerDrivers = [] }) => {
   // Form State
   const [name, setName] = useState('');
   const [intent, setIntent] = useState<'一定參加' | '高機率參加' | '觀望中'>('一定參加');
@@ -313,6 +314,48 @@ export const SurveyForm: React.FC<Props> = ({ onSubmit, onSuccessNavigate }) => 
                 </p>
               </div>
             </label>
+
+            {/* 即時駕駛名單 */}
+            <div className="mt-3 p-3.5 rounded-xl bg-blue-50/70 border border-blue-200">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-blue-950 flex items-center gap-1.5">
+                  <UserCheck className="w-4 h-4 text-blue-600" />
+                  即時駕駛名單（即時同步）
+                </span>
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                  目前共 {volunteerDrivers.length} 位
+                </span>
+              </div>
+
+              {volunteerDrivers.length > 0 ? (
+                <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+                  {volunteerDrivers.map((driverName, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-blue-200 text-xs font-semibold text-blue-900 shadow-2xs"
+                    >
+                      <Car className="w-3.5 h-3.5 text-blue-600" />
+                      <span>{driverName}</span>
+                    </span>
+                  ))}
+                  {driver && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-300 text-xs font-semibold text-emerald-800">
+                      <span>＋ {name.trim() || '您'}（送出後加入）</span>
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-2 text-xs text-blue-800/80">
+                  {driver ? (
+                    <span className="font-semibold text-emerald-700 flex items-center gap-1">
+                      <span>🎉 感謝您！送出問卷後，{name.trim() || '您'} 將成為第一位登記的駕駛志願者！</span>
+                    </span>
+                  ) : (
+                    <span>目前尚無同學登記駕駛志願，歡迎有駕照且具備自駕意願的同學加入！</span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
