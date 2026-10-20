@@ -310,7 +310,7 @@ export const SurveyForm: React.FC<Props> = ({ onSubmit, onSuccessNavigate, volun
                   我願意在日本擔任駕駛／換手開車
                 </span>
                 <p className="text-xs text-ink-muted mt-1 leading-relaxed">
-                  ※ 此欄位僅用來統計願意輪流開車的人力意願，實際租車與駕駛仍須具備有效台灣駕照與合法日文譯本。
+                  駕駛須具備中華民國有效駕照及合法效期內日文譯本
                 </p>
               </div>
             </label>
