@@ -69,7 +69,7 @@ export const AdminModal: React.FC<Props> = ({
               setAdminKey(e.target.value);
               setErrorMsg(null);
             }}
-            placeholder="預設密碼：survey2026admin"
+            placeholder="請輸入管理員專用授權密碼"
             className="w-full px-3 py-2 rounded-xl border border-border bg-white text-xs text-ink focus:outline-none focus:ring-2 focus:ring-primary"
           />
           {errorMsg && (

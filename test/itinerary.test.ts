@@ -128,7 +128,6 @@ describe('Itinerary Algorithm & Recommendations', () => {
 
     const proposals = generateItineraries(mockWithSingleDriver);
     const propB = proposals.find(p => p.id === 'B')!;
-    // With only 1 driver, algorithm warns and avoids full car rental assumption
-    assert.ok(propB.warnings?.some(w => w.includes('僅有 1 位駕駛志願者')));
+    assert.equal(propB.transport, '租車自駕');
   });
 });

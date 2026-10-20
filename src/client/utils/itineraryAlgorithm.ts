@@ -141,13 +141,11 @@ export function generateItineraries(responses: SurveyResponse[]): ItineraryPropo
   if (rentalCarCount > 0) {
     if (driverVolunteersCount >= 2) {
       proposalBTransport = '租車自駕';
-      proposalBWarnings.push(`自駕安全提醒：目前共有 ${driverVolunteersCount} 位同學志願換手開車。請確認持有有效台灣駕照與日文譯本，並建議投保全額免責險。`);
+      proposalBWarnings.push(`自駕提醒：目前共有 ${driverVolunteersCount} 位同學志願換手開車。`);
     } else if (driverVolunteersCount === 1) {
-      proposalBTransport = '大眾運輸為主（自駕志願者不足）';
-      proposalBWarnings.push(`僅有 1 位駕駛志願者，考量長途疲倦與行車安全，建議改以觀光列車與包車銜接，不建議全程單人自駕。`);
+      proposalBTransport = '租車自駕';
     } else {
       proposalBTransport = '大眾運輸為主';
-      proposalBWarnings.push(`無駕駛志願者，改採 JR PASS / 觀光巴士悠閒巡遊。`);
     }
   }
 

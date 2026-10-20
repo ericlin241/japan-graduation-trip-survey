@@ -84,7 +84,7 @@ CREATE INDEX IF NOT EXISTS idx_responses_intent ON responses(intent);
 3. **提交頻率限制（Rate Limiting）**：Worker 內建 IP 頻率監控，單一 IP 每分鐘最多提交 15 次，防止惡意洗票。
 4. **受保護的管理 API**：
    - 公開頁面不提供直接刪除按鈕，保障填答不被隨意竄改。
-   - 提供安全管理維護功能（`DELETE /api/responses/:id`），必須驗證 `x-admin-password`（預設密碼：`survey2026admin`）。
+   - 提供安全管理維護功能（`DELETE /api/responses/:id`），必須驗證 `x-admin-password` 管理員授權密碼。
 5. **隱私說明**：本系統僅蒐集畢旅決策相關資料，不索取任何身分證、信用卡等機密個資。
 
 ---

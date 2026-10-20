@@ -144,9 +144,9 @@ async function handleApiRoutes(request: Request, url: URL, env: Env): Promise<Re
     }
 
     const adminPassword = request.headers.get('x-admin-password') || url.searchParams.get('admin_key');
-    const expectedPassword = env.ADMIN_PASSWORD_HASH || 'survey2026admin';
+    const expectedPassword = env.ADMIN_PASSWORD_HASH;
 
-    if (!adminPassword || adminPassword !== expectedPassword) {
+    if (!expectedPassword || !adminPassword || adminPassword !== expectedPassword) {
       return jsonResponse({ error: '未授權的管理操作：密碼錯誤或未提供' }, 401);
     }
 
