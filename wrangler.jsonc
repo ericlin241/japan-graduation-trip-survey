@@ -13,7 +13,7 @@
     {
       "binding": "DB",
       "database_name": "japan-trip-survey-db",
-      "database_id": "PLACEHOLDER_DB_ID"
+      "database_id": "beb5164f-8acd-429d-a4d1-78d1b8e2e7dc"
     }
   ],
   "durable_objects": {
@@ -27,7 +27,7 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_classes": ["SurveyRoom"]
+      "new_sqlite_classes": ["SurveyRoom"]
     }
   ],
   "vars": {
