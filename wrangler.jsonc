@@ -1,0 +1,37 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "japan-graduation-trip-survey",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2024-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "japan-trip-survey-db",
+      "database_id": "PLACEHOLDER_DB_ID"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "SURVEY_ROOM",
+        "class_name": "SurveyRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_classes": ["SurveyRoom"]
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "production",
+    "ADMIN_PASSWORD_HASH": "survey2026admin"
+  }
+}
