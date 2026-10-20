@@ -26,16 +26,6 @@ export interface SurveyStats {
   intentVotes: Record<string, number>;
 }
 
-export interface BudgetBreakdown {
-  flight: string;
-  lodging: string;
-  transport: string;
-  food: string;
-  activities: string;
-  totalRange: string;
-  assumptions: string;
-}
-
 export interface ItineraryProposal {
   id: 'A' | 'B' | 'C';
   title: string;
@@ -46,7 +36,6 @@ export interface ItineraryProposal {
   days: string;
   style: string;
   transport: string;
-  budget: BudgetBreakdown;
   routeHighlights: string[];
   reason: string;
   sampleSize: number;

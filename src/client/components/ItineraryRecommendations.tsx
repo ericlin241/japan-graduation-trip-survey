@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ItineraryProposal } from '../types';
-import { Copy, Check, AlertTriangle, Sparkles, MapPin, Calendar, Clock, DollarSign } from 'lucide-react';
+import { Copy, Check, AlertTriangle, Sparkles, MapPin, Calendar, Clock } from 'lucide-react';
 
 interface Props {
   proposals: ItineraryProposal[];
@@ -21,20 +21,13 @@ export const ItineraryRecommendations: React.FC<Props> = ({
 ⏱️ 建議天數：${prop.days}
 🌿 旅行風格：${prop.style}
 🚗 交通建議：${prop.transport}
-💰 每人預估預算：${prop.budget.totalRange}
-  ・機票：${prop.budget.flight}
-  ・住宿：${prop.budget.lodging}
-  ・交通：${prop.budget.transport}
-  ・餐飲：${prop.budget.food}
-  ・活動門票：${prop.budget.activities}
 
 ✨ 亮點路線安排：
 ${prop.routeHighlights.map((r) => `  ${r}`).join('\n')}
 
 📊 推薦依據：${prop.reason}
 👥 目前統計樣本數：${prop.sampleSize} 筆填答
-${prop.warnings && prop.warnings.length > 0 ? `⚠️ 注意事項：\n${prop.warnings.map((w) => `  ※ ${w}`).join('\n')}\n` : ''}
-💡 預算說明：${prop.budget.assumptions}`;
+${prop.warnings && prop.warnings.length > 0 ? `⚠️ 注意事項：\n${prop.warnings.map((w) => `  ※ ${w}`).join('\n')}\n` : ''}`;
 
     try {
       if (navigator.clipboard && window.isSecureContext) {
@@ -91,7 +84,7 @@ ${prop.warnings && prop.warnings.length > 0 ? `⚠️ 注意事項：\n${prop.wa
             動態智慧行程提案（Top 3）
           </h2>
           <p className="text-xs sm:text-sm text-ink-muted">
-            根據目前全體 {totalCount} 筆真實填答，即時演算推薦的三套完整行程與預算分析
+            根據目前全體 {totalCount} 筆真實填答，即時演算推薦的三套完整行程方案與路線亮點
           </p>
         </div>
       </div>
@@ -169,26 +162,6 @@ ${prop.warnings && prop.warnings.length > 0 ? `⚠️ 注意事項：\n${prop.wa
                       </li>
                     ))}
                   </ul>
-                </div>
-
-                {/* Budget Estimate */}
-                <div className="p-4 rounded-xl bg-page border border-border-subtle space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-ink flex items-center gap-1">
-                      <DollarSign className="w-3.5 h-3.5 text-secondary" />
-                      預估每人預算
-                    </span>
-                    <span className="text-sm font-extrabold text-secondary">
-                      {prop.budget.totalRange}
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-ink-muted space-y-1 pt-2 border-t border-border-subtle">
-                    <div className="flex justify-between"><span>機票預估</span><span>{prop.budget.flight}</span></div>
-                    <div className="flex justify-between"><span>住宿預估</span><span>{prop.budget.lodging}</span></div>
-                    <div className="flex justify-between"><span>當地交通</span><span>{prop.budget.transport}</span></div>
-                    <div className="flex justify-between"><span>餐飲預估</span><span>{prop.budget.food}</span></div>
-                    <div className="flex justify-between"><span>門票活動</span><span>{prop.budget.activities}</span></div>
-                  </div>
                 </div>
 
                 {/* Reason */}

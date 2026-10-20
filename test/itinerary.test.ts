@@ -1,7 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { generateItineraries } from '../src/client/utils/itineraryAlgorithm.ts';
-import { calculateBudget } from '../src/client/utils/budgetCalculator.ts';
 
 describe('Itinerary Algorithm & Recommendations', () => {
   it('returns empty array when 0 responses exist', () => {
@@ -131,22 +130,5 @@ describe('Itinerary Algorithm & Recommendations', () => {
     const propB = proposals.find(p => p.id === 'B')!;
     // With only 1 driver, algorithm warns and avoids full car rental assumption
     assert.ok(propB.warnings?.some(w => w.includes('僅有 1 位駕駛志願者')));
-  });
-});
-
-describe('Budget Calculator', () => {
-  it('calculates centralized budget range with all components', () => {
-    const budget = calculateBudget({
-      region: '東京及近郊',
-      days: '7 天',
-      style: '城鄉各半',
-      transport: '大眾運輸為主'
-    });
-
-    assert.ok(budget.totalRange.includes('NT$'));
-    assert.ok(budget.flight.includes('NT$'));
-    assert.ok(budget.lodging.includes('6 晚'));
-    assert.ok(budget.transport.includes('大眾運輸為主'));
-    assert.ok(budget.assumptions.includes('估算基準'));
   });
 });

@@ -1,6 +1,5 @@
 import { SurveyResponse, ItineraryProposal } from '../types';
 import { REGIONS, DAYS_OPTIONS } from './constants';
-import { calculateBudget } from './budgetCalculator';
 
 export function generateItineraries(responses: SurveyResponse[]): ItineraryProposal[] {
   if (!responses || responses.length === 0) {
@@ -122,12 +121,6 @@ export function generateItineraries(responses: SurveyResponse[]): ItineraryPropo
     days: topDays,
     style: topStyle,
     transport: proposalATransport,
-    budget: calculateBudget({
-      region: topRegion,
-      days: topDays,
-      style: topStyle,
-      transport: proposalATransport
-    }),
     routeHighlights: getRouteHighlights(topRegion, topStyle, topDays),
     reason: `依據目前統計，${topRegion} 獲得全體最高票（${regionCounts.get(topRegion) || 0} 票），多數同學偏好 ${topDays} 行程。交通以「${proposalATransport}」銜接最為平順。`,
     sampleSize,
@@ -170,12 +163,6 @@ export function generateItineraries(responses: SurveyResponse[]): ItineraryPropo
     days: proposalBDays,
     style: '慢生活風景',
     transport: proposalBTransport,
-    budget: calculateBudget({
-      region: naturePreferredRegion,
-      days: proposalBDays,
-      style: '慢生活風景',
-      transport: proposalBTransport.includes('自駕') ? '租車自駕' : '大眾運輸為主'
-    }),
     routeHighlights: getRouteHighlights(naturePreferredRegion, '慢生活風景', proposalBDays),
     reason: hasStrongNatureVote
       ? `回應同學對自然風景與溫泉放鬆的渴望（共 ${styleCounts['慢生活風景']} 票），特別規劃低步調、深度體驗的風土路線。`
@@ -202,12 +189,6 @@ export function generateItineraries(responses: SurveyResponse[]): ItineraryPropo
     days: '7 天',
     style: '城鄉各半',
     transport: '大眾運輸為主',
-    budget: calculateBudget({
-      region: proposalCRegion,
-      days: '7 天',
-      style: '城鄉各半',
-      transport: '大眾運輸為主'
-    }),
     routeHighlights: getRouteHighlights(proposalCRegion, '城鄉各半', '7 天'),
     reason: `融合「都市購物美食」與「近郊自然歷史」，前半段打卡流行商圈、後半段漫遊湖光山色，滿足全體團員多元願望的最佳平衡解。`,
     sampleSize,
