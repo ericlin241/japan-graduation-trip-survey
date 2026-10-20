@@ -17,10 +17,6 @@ export function App() {
     deleteResponse,
   } = useSurveyData();
 
-  const volunteerDrivers = responses
-    .filter((r) => r.driver === 1)
-    .map((r) => r.name);
-
   return (
     <div className="min-h-screen flex flex-col bg-page text-ink selection:bg-primary-light selection:text-primary">
       {/* Top Header */}
@@ -37,7 +33,6 @@ export function App() {
           <SurveyForm
             onSubmit={submitResponse}
             onSuccessNavigate={() => setActiveTab('stats')}
-            volunteerDrivers={volunteerDrivers}
           />
         ) : (
           <StatsTab
