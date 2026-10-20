@@ -54,9 +54,6 @@ export const StatsTab: React.FC<Props> = ({
               全體共 {stats.totalCount} 筆填答
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-ink-muted mt-1">
-            資料儲存於 Cloudflare D1 雲端資料庫，跨裝置即時同步更新
-          </p>
         </div>
 
         <div className="flex items-center gap-2">
