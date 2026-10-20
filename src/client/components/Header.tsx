@@ -26,17 +26,9 @@ export const Header: React.FC<Props> = ({
               <Compass className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-ink">
-                  日本畢業旅行意向調查
-                </h1>
-                <span className="text-xs px-2 py-0.5 rounded bg-primary-light text-primary font-medium">
-                  2026 畢業季
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-ink-muted">
-                共同決定屬於我們的日本畢旅・即時統計與智慧行程提案
-              </p>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-ink">
+                日本畢業旅行意向調查
+              </h1>
             </div>
           </div>
 

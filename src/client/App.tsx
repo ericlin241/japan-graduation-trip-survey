@@ -57,13 +57,12 @@ export function App() {
           <div className="flex items-center gap-2">
             <Compass className="w-4 h-4 text-primary" />
             <span className="font-semibold text-ink">日本畢業旅行意向調查系統</span>
-            <span>・2026 畢業大群組專用</span>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3 text-stone-500">
             <span className="flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-              <span>本系統資料僅供本次畢業旅行討論與成團決策使用，嚴格保護同學隱私</span>
+              <span>僅供本次畢業旅行討論與成團決策使用</span>
             </span>
           </div>
         </div>

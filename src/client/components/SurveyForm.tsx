@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { REGIONS, INTENTS, DAYS_OPTIONS, STYLES, TRANSPORTS } from '../utils/constants';
-import { Send, CheckCircle2, AlertCircle, Car, MapPin, Sparkles, User, Calendar, Compass, UserCheck } from 'lucide-react';
+import { Send, CheckCircle2, AlertCircle, Car, MapPin, User, Calendar, Compass, UserCheck } from 'lucide-react';
 
 interface Props {
   onSubmit: (data: any) => Promise<{ success: boolean; error?: string }>;
@@ -99,21 +99,6 @@ export const SurveyForm: React.FC<Props> = ({ onSubmit, onSuccessNavigate, volun
 
   return (
     <div className="max-w-3xl mx-auto py-6 sm:py-8 px-4">
-      {/* Introduction Card */}
-      <div className="bg-card rounded-2xl border border-border p-6 sm:p-8 shadow-soft mb-8">
-        <div className="flex items-start gap-4">
-          <div className="p-3 bg-secondary-light rounded-xl text-secondary flex-shrink-0">
-            <Sparkles className="w-6 h-6" />
-          </div>
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-ink">一起出發去日本！</h2>
-            <p className="mt-2 text-sm text-ink-muted leading-relaxed">
-              為了規劃最適合大家的畢業旅行，請花 2 分鐘填寫這份意向問卷。所有填答將即時匯總於雲端，並自動產生推薦行程方案。
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* Success Notification */}
       {successMessage && (
         <div className="mb-6 p-5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 shadow-soft animate-fade-in">
