@@ -100,11 +100,8 @@ export const RegionsBarChart: React.FC<Props> = ({
   return (
     <div className="bg-card rounded-2xl border border-border p-5 sm:p-6 shadow-soft flex flex-col justify-between">
       <div>
-        <div className="flex items-center justify-between mb-1">
+        <div className="mb-1">
           <h3 className="font-bold text-base text-ink">地區偏好票數排行</h3>
-          <span className="text-xs px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-600 font-medium">
-            橫向長條圖
-          </span>
         </div>
         <p className="text-xs text-ink-muted mb-4">
           每人最多選三處・總有效票數：<strong>{totalRegionVotes}</strong> 票 / 填答總人數：<strong>{totalCount}</strong> 人

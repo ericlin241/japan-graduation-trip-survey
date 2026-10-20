@@ -64,11 +64,8 @@ export const DaysDoughnutChart: React.FC<Props> = ({ daysVotes, totalCount }) =>
   return (
     <div className="bg-card rounded-2xl border border-border p-5 sm:p-6 shadow-soft flex flex-col justify-between">
       <div>
-        <div className="flex items-center justify-between mb-1">
+        <div className="mb-1">
           <h3 className="font-bold text-base text-ink">行程天數比例</h3>
-          <span className="text-xs px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-600 font-medium">
-            甜甜圈圖
-          </span>
         </div>
         <p className="text-xs text-ink-muted mb-4">
           單選統計・依有效填答人數為分母

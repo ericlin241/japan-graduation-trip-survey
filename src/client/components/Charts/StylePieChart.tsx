@@ -63,11 +63,8 @@ export const StylePieChart: React.FC<Props> = ({ styleVotes, totalCount }) => {
   return (
     <div className="bg-card rounded-2xl border border-border p-5 sm:p-6 shadow-soft flex flex-col justify-between">
       <div>
-        <div className="flex items-center justify-between mb-1">
+        <div className="mb-1">
           <h3 className="font-bold text-base text-ink">旅行風格比例</h3>
-          <span className="text-xs px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-600 font-medium">
-            圓餅圖
-          </span>
         </div>
         <p className="text-xs text-ink-muted mb-4">
           單選統計・「城鄉各半」獨立完整統計，未合併分類

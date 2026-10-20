@@ -91,11 +91,8 @@ export const TransportBarChart: React.FC<Props> = ({
   return (
     <div className="bg-card rounded-2xl border border-border p-5 sm:p-6 shadow-soft flex flex-col justify-between">
       <div>
-        <div className="flex items-center justify-between mb-1">
+        <div className="mb-1">
           <h3 className="font-bold text-base text-ink">交通方式與駕駛志願者</h3>
-          <span className="text-xs px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-600 font-medium">
-            長條圖與人數對照
-          </span>
         </div>
         <p className="text-xs text-ink-muted mb-4">
           明確區分「想搭車自駕」與「具備意願親自駕駛」人數
