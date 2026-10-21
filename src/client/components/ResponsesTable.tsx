@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { SurveyResponse } from '../types';
-import { ArrowUpDown, ChevronLeft, ChevronRight, Car, Clock, Shield, ShieldCheck, LogOut, Edit3, Trash2 } from 'lucide-react';
+import { ArrowUpDown, Car, Clock, Shield, ShieldCheck, LogOut, Edit3, Trash2 } from 'lucide-react';
 
 interface Props {
   responses: SurveyResponse[];
@@ -20,8 +20,6 @@ export const ResponsesTable: React.FC<Props> = ({
   onDeleteResponse,
 }) => {
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
 
   // Sorting
   const sortedResponses = useMemo(() => {
@@ -31,13 +29,6 @@ export const ResponsesTable: React.FC<Props> = ({
       return sortOrder === 'desc' ? timeB - timeA : timeA - timeB;
     });
   }, [responses, sortOrder]);
-
-  // Pagination
-  const totalPages = Math.max(1, Math.ceil(sortedResponses.length / pageSize));
-  const paginatedResponses = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return sortedResponses.slice(start, start + pageSize);
-  }, [sortedResponses, currentPage, pageSize]);
 
   const toggleSortOrder = () => {
     setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'));
@@ -151,7 +142,7 @@ export const ResponsesTable: React.FC<Props> = ({
                 </td>
               </tr>
             ) : (
-              paginatedResponses.map((r) => (
+              sortedResponses.map((r) => (
                 <tr key={r.id} className="hover:bg-page/40 transition-colors">
                   <td className="py-3.5 px-4 font-bold text-ink">
                     {r.name}
@@ -232,31 +223,6 @@ export const ResponsesTable: React.FC<Props> = ({
           </tbody>
         </table>
       </div>
-
-      {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="p-4 border-t border-border-subtle bg-page/40 flex items-center justify-between text-xs text-ink-muted">
-          <span>
-            第 {currentPage} 頁 / 共 {totalPages} 頁（共 {responses.length} 筆）
-          </span>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              className="p-1.5 rounded-lg border border-border bg-card hover:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className="p-1.5 rounded-lg border border-border bg-card hover:bg-stone-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
