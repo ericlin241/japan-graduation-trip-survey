@@ -32,6 +32,6 @@
   ],
   "vars": {
     "ENVIRONMENT": "production",
-    "ADMIN_PASSWORD_HASH": "JpTrip2026!Admin#Sec"
+    "ADMIN_PASSWORD_HASH": "2026admin"
   }
 }

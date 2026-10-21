@@ -3,12 +3,14 @@ import { ConnectionStatus } from '../types';
 
 interface UseWebSocketSyncProps {
   onNewResponse?: (data: any) => void;
+  onUpdateResponse?: (data: any) => void;
   onDeleteResponse?: (data: { id: string }) => void;
   onRefreshNeeded?: () => void;
 }
 
 export function useWebSocketSync({
   onNewResponse,
+  onUpdateResponse,
   onDeleteResponse,
   onRefreshNeeded,
 }: UseWebSocketSyncProps = {}) {
@@ -53,6 +55,8 @@ export function useWebSocketSync({
           const message = JSON.parse(event.data);
           if (message.type === 'NEW_RESPONSE' && message.payload) {
             onNewResponse?.(message.payload);
+          } else if (message.type === 'UPDATE_RESPONSE' && message.payload) {
+            onUpdateResponse?.(message.payload);
           } else if (message.type === 'DELETE_RESPONSE' && message.payload) {
             onDeleteResponse?.(message.payload);
           } else if (message.type === 'STATS_UPDATE') {

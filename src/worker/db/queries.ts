@@ -160,6 +160,59 @@ export async function deleteSurveyResponse(db: D1Database, id: string): Promise<
   return (res.meta?.changes ?? 0) > 0;
 }
 
+export async function updateSurveyResponse(
+  db: D1Database,
+  id: string,
+  submission: SurveySubmission
+): Promise<SurveyResponse | null> {
+  const existing = await db
+    .prepare('SELECT created_at FROM responses WHERE id = ?')
+    .bind(id)
+    .first<{ created_at: string }>();
+
+  if (!existing) {
+    return null;
+  }
+
+  const now = new Date().toISOString();
+  const driverInt = submission.driver ? 1 : 0;
+  const regionsJson = JSON.stringify(submission.regions);
+
+  await db
+    .prepare(
+      `UPDATE responses
+       SET name = ?, intent = ?, days = ?, style = ?, transport = ?, driver = ?, regions = ?, notes = ?, updated_at = ?
+       WHERE id = ?`
+    )
+    .bind(
+      submission.name,
+      submission.intent,
+      submission.days,
+      submission.style,
+      submission.transport,
+      driverInt,
+      regionsJson,
+      submission.notes || '',
+      now,
+      id
+    )
+    .run();
+
+  return {
+    id,
+    name: submission.name,
+    intent: submission.intent,
+    days: submission.days,
+    style: submission.style,
+    transport: submission.transport,
+    driver: driverInt,
+    regions: submission.regions,
+    notes: submission.notes || '',
+    created_at: existing.created_at,
+    updated_at: now
+  };
+}
+
 export function computeSurveyStats(responses: SurveyResponse[]): SurveyStats {
   const regionVotes: Record<string, number> = {
     '東京及近郊': 0,

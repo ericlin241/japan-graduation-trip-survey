@@ -135,12 +135,19 @@ export function useSurveyData() {
     });
   }, []);
 
+  const handleUpdateResponse = useCallback((updatedResp: SurveyResponse) => {
+    setResponses((prev) =>
+      prev.map((item) => (item.id === updatedResp.id ? updatedResp : item))
+    );
+  }, []);
+
   const handleDeleteResponse = useCallback(({ id }: { id: string }) => {
     setResponses((prev) => prev.filter((item) => item.id !== id));
   }, []);
 
   const { status: wsStatus } = useWebSocketSync({
     onNewResponse: handleNewResponse,
+    onUpdateResponse: handleUpdateResponse,
     onDeleteResponse: handleDeleteResponse,
     onRefreshNeeded: fetchResponses
   });
@@ -188,6 +195,56 @@ export function useSurveyData() {
     }
   };
 
+  // Update response (Admin only)
+  const updateResponse = async (
+    id: string,
+    formData: any,
+    adminKey: string
+  ): Promise<{ success: boolean; error?: string; data?: SurveyResponse }> => {
+    try {
+      const res = await fetch(`/api/responses/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': adminKey
+        },
+        body: JSON.stringify(formData)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { success: false, error: data.error || '修改失敗' };
+      }
+      if (data.data) {
+        handleUpdateResponse(data.data);
+      }
+      return { success: true, data: data.data };
+    } catch (err: any) {
+      return { success: false, error: err.message || '網路連線失敗' };
+    }
+  };
+
+  // Verify Admin Password
+  const verifyAdminPassword = async (
+    password: string
+  ): Promise<{ valid: boolean; error?: string }> => {
+    try {
+      const res = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ password })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return { valid: false, error: data.error || '管理員密碼錯誤' };
+      }
+      return { valid: true };
+    } catch (err: any) {
+      return { valid: false, error: err.message || '網路連線失敗' };
+    }
+  };
+
   // Delete response (Admin only)
   const deleteResponse = async (id: string, adminKey: string): Promise<{ success: boolean; error?: string }> => {
     try {
@@ -216,6 +273,8 @@ export function useSurveyData() {
     wsStatus,
     refresh: fetchResponses,
     submitResponse,
-    deleteResponse
+    updateResponse,
+    deleteResponse,
+    verifyAdminPassword
   };
 }

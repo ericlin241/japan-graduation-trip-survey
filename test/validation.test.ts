@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateSubmission, computeSurveyStats } from '../src/worker/db/queries.ts';
+import { validateSubmission, computeSurveyStats, updateSurveyResponse } from '../src/worker/db/queries.ts';
 
 describe('Submission Validation', () => {
   const validPayload = {
@@ -136,5 +136,60 @@ describe('Survey Stats Computation', () => {
     assert.equal(stats.transportVotes.publicTransport, 1);
     assert.equal(stats.transportVotes.rentalCar, 2);
     assert.equal(stats.transportVotes.willingDrivers, 1); // Strictly separate from rentalCar
+  });
+});
+
+describe('Update Survey Response', () => {
+  it('updates survey response when record exists', async () => {
+    const mockDb: any = {
+      prepare: (sql: string) => ({
+        bind: (...args: any[]) => ({
+          first: async () => (args[0] === 'test-id' ? { created_at: '2026-10-20T10:00:00.000Z' } : null),
+          run: async () => ({ meta: { changes: 1 } }),
+        }),
+      }),
+    };
+
+    const updated = await updateSurveyResponse(mockDb, 'test-id', {
+      name: '王小華',
+      intent: '一定參加',
+      days: '9 天',
+      style: '慢生活風景',
+      transport: '租車自駕',
+      driver: true,
+      regions: ['北海道'],
+      notes: '想自駕看薰衣草'
+    });
+
+    assert.ok(updated);
+    assert.equal(updated.name, '王小華');
+    assert.equal(updated.days, '9 天');
+    assert.equal(updated.driver, 1);
+    assert.deepEqual(updated.regions, ['北海道']);
+    assert.equal(updated.created_at, '2026-10-20T10:00:00.000Z');
+    assert.ok(updated.updated_at);
+  });
+
+  it('returns null when record to update does not exist', async () => {
+    const mockDb: any = {
+      prepare: () => ({
+        bind: () => ({
+          first: async () => null,
+          run: async () => ({ meta: { changes: 0 } }),
+        }),
+      }),
+    };
+
+    const updated = await updateSurveyResponse(mockDb, 'non-existent', {
+      name: '無名氏',
+      intent: '觀望中',
+      days: '5 天',
+      style: '都市繁華',
+      transport: '大眾運輸為主',
+      driver: false,
+      regions: ['東京及近郊'],
+    });
+
+    assert.equal(updated, null);
   });
 });

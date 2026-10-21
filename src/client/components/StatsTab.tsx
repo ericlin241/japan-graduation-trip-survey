@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { SurveyResponse, SurveyStats } from '../types';
 import { generateItineraries } from '../utils/itineraryAlgorithm';
 import { downloadResponsesCsv } from '../utils/exportCsv';
@@ -8,7 +8,8 @@ import { StylePieChart } from './Charts/StylePieChart';
 import { TransportBarChart } from './Charts/TransportBarChart';
 import { ItineraryRecommendations } from './ItineraryRecommendations';
 import { ResponsesTable } from './ResponsesTable';
-import { AdminModal } from './AdminModal';
+import { AdminLoginModal } from './AdminLoginModal';
+import { EditResponseModal } from './EditResponseModal';
 import { Download, RefreshCw, BarChart2 } from 'lucide-react';
 
 interface Props {
@@ -17,6 +18,8 @@ interface Props {
   isLoading: boolean;
   onRefresh: () => void;
   onDeleteResponse: (id: string, adminKey: string) => Promise<{ success: boolean; error?: string }>;
+  onUpdateResponse: (id: string, formData: any, adminKey: string) => Promise<{ success: boolean; error?: string }>;
+  onVerifyAdminPassword: (password: string) => Promise<{ valid: boolean; error?: string }>;
   onNavigateToForm: () => void;
 }
 
@@ -26,9 +29,37 @@ export const StatsTab: React.FC<Props> = ({
   isLoading,
   onRefresh,
   onDeleteResponse,
+  onUpdateResponse,
+  onVerifyAdminPassword,
   onNavigateToForm,
 }) => {
-  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  // Admin authentication state (persisted in sessionStorage)
+  const [adminKey, setAdminKey] = useState<string>(() => {
+    try {
+      return sessionStorage.getItem('japan_trip_admin_key') || '';
+    } catch {
+      return '';
+    }
+  });
+
+  const isAdmin = Boolean(adminKey);
+
+  // Modals state
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [editingResponse, setEditingResponse] = useState<SurveyResponse | null>(null);
+
+  // Synchronize admin key in sessionStorage
+  useEffect(() => {
+    try {
+      if (adminKey) {
+        sessionStorage.setItem('japan_trip_admin_key', adminKey);
+      } else {
+        sessionStorage.removeItem('japan_trip_admin_key');
+      }
+    } catch {
+      // ignore
+    }
+  }, [adminKey]);
 
   // Compute proposals dynamically from real responses
   const proposals = useMemo(() => {
@@ -41,6 +72,41 @@ export const StatsTab: React.FC<Props> = ({
     } catch {
       downloadResponsesCsv(responses);
     }
+  };
+
+  const handleAdminLogin = async (password: string) => {
+    const res = await onVerifyAdminPassword(password);
+    if (res.valid) {
+      setAdminKey(password);
+      return { success: true };
+    }
+    return { success: false, error: res.error || '密碼錯誤' };
+  };
+
+  const handleAdminLogout = () => {
+    setAdminKey('');
+  };
+
+  const handleDeleteItem = async (id: string, name: string) => {
+    if (!adminKey) {
+      setIsLoginModalOpen(true);
+      return;
+    }
+    if (!confirm(`確定要刪除「${name}」的填答紀錄嗎？此操作無法還原。`)) {
+      return;
+    }
+    const res = await onDeleteResponse(id, adminKey);
+    if (!res.success) {
+      alert(res.error || '刪除失敗');
+    }
+  };
+
+  const handleSaveEdit = async (id: string, formData: any) => {
+    if (!adminKey) {
+      setIsLoginModalOpen(true);
+      return { success: false, error: '請先登入管理員' };
+    }
+    return await onUpdateResponse(id, formData, adminKey);
   };
 
   return (
@@ -125,16 +191,27 @@ export const StatsTab: React.FC<Props> = ({
       <section className="space-y-4 pt-4">
         <ResponsesTable
           responses={responses}
-          onOpenAdminModal={() => setIsAdminModalOpen(true)}
+          isAdmin={isAdmin}
+          onOpenAdminLogin={() => setIsLoginModalOpen(true)}
+          onLogoutAdmin={handleAdminLogout}
+          onEditResponse={(r) => setEditingResponse(r)}
+          onDeleteResponse={handleDeleteItem}
         />
       </section>
 
-      {/* Admin Modal */}
-      <AdminModal
-        isOpen={isAdminModalOpen}
-        onClose={() => setIsAdminModalOpen(false)}
-        responses={responses}
-        onDelete={onDeleteResponse}
+      {/* Admin Login Modal */}
+      <AdminLoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLogin={handleAdminLogin}
+      />
+
+      {/* Edit Response Modal */}
+      <EditResponseModal
+        isOpen={Boolean(editingResponse)}
+        response={editingResponse}
+        onClose={() => setEditingResponse(null)}
+        onSave={handleSaveEdit}
       />
     </div>
   );

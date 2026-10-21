@@ -1,13 +1,24 @@
 import React, { useState, useMemo } from 'react';
 import { SurveyResponse } from '../types';
-import { ArrowUpDown, ChevronLeft, ChevronRight, Car, Clock, Shield } from 'lucide-react';
+import { ArrowUpDown, ChevronLeft, ChevronRight, Car, Clock, Shield, ShieldCheck, LogOut, Edit3, Trash2 } from 'lucide-react';
 
 interface Props {
   responses: SurveyResponse[];
-  onOpenAdminModal?: () => void;
+  isAdmin?: boolean;
+  onOpenAdminLogin?: () => void;
+  onLogoutAdmin?: () => void;
+  onEditResponse?: (response: SurveyResponse) => void;
+  onDeleteResponse?: (id: string, name: string) => void;
 }
 
-export const ResponsesTable: React.FC<Props> = ({ responses, onOpenAdminModal }) => {
+export const ResponsesTable: React.FC<Props> = ({
+  responses,
+  isAdmin = false,
+  onOpenAdminLogin,
+  onLogoutAdmin,
+  onEditResponse,
+  onDeleteResponse,
+}) => {
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
@@ -68,7 +79,7 @@ export const ResponsesTable: React.FC<Props> = ({ responses, onOpenAdminModal })
           </p>
         </div>
 
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
           <button
             onClick={toggleSortOrder}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-page border border-border hover:bg-stone-100 transition text-ink"
@@ -77,15 +88,34 @@ export const ResponsesTable: React.FC<Props> = ({ responses, onOpenAdminModal })
             <span>時間排序：{sortOrder === 'desc' ? '新到舊' : '舊到新'}</span>
           </button>
 
-          {onOpenAdminModal && (
-            <button
-              onClick={onOpenAdminModal}
-              title="管理員資料維護"
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-stone-400 hover:text-stone-600 hover:bg-stone-100 transition"
-            >
-              <Shield className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">管理維護</span>
-            </button>
+          {isAdmin ? (
+            <div className="inline-flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>管理員模式已啟用</span>
+              </span>
+              {onLogoutAdmin && (
+                <button
+                  onClick={onLogoutAdmin}
+                  title="登出管理員身分"
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium text-stone-500 hover:text-red-600 hover:bg-stone-100 transition"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>登出</span>
+                </button>
+              )}
+            </div>
+          ) : (
+            onOpenAdminLogin && (
+              <button
+                onClick={onOpenAdminLogin}
+                title="管理員登入（可編輯或刪除填答）"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-600 bg-page border border-border hover:bg-stone-100 hover:text-ink transition"
+              >
+                <Shield className="w-3.5 h-3.5 text-primary" />
+                <span>管理員登入</span>
+              </button>
+            )
           )}
         </div>
       </div>
@@ -104,12 +134,13 @@ export const ResponsesTable: React.FC<Props> = ({ responses, onOpenAdminModal })
               <th className="py-3 px-4 min-w-[160px]">想去地區</th>
               <th className="py-3 px-4 min-w-[200px] whitespace-normal">私心許願／備註</th>
               <th className="py-3 px-4 text-right">填答時間</th>
+              {isAdmin && <th className="py-3 px-4 text-center min-w-[120px]">管理操作</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-border-subtle">
             {responses.length === 0 ? (
               <tr>
-                <td colSpan={9} className="py-12 text-center text-ink-muted">
+                <td colSpan={isAdmin ? 10 : 9} className="py-12 text-center text-ink-muted">
                   <div className="flex flex-col items-center justify-center">
                     <span className="text-3xl mb-2">📋</span>
                     <span className="text-sm font-semibold text-ink">目前尚無任何填答資料</span>
@@ -171,6 +202,30 @@ export const ResponsesTable: React.FC<Props> = ({ responses, onOpenAdminModal })
                       {formatLocalTime(r.created_at)}
                     </span>
                   </td>
+                  {isAdmin && (
+                    <td className="py-3.5 px-4 text-center">
+                      <div className="inline-flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => onEditResponse?.(r)}
+                          title="修改此筆資料"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 transition shadow-xs"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>修改</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onDeleteResponse?.(r.id, r.name)}
+                          title="刪除此筆資料"
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition shadow-xs"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>刪除</span>
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))
             )}

@@ -3,6 +3,7 @@ import {
   getAllResponses,
   insertSurveyResponse,
   deleteSurveyResponse,
+  updateSurveyResponse,
   computeSurveyStats,
   validateSubmission
 } from './db/queries';
@@ -136,6 +137,66 @@ async function handleApiRoutes(request: Request, url: URL, env: Env): Promise<Re
     }, 201);
   }
 
+  // POST /api/admin/verify (Verify admin password)
+  if (path === '/api/admin/verify' && request.method === 'POST') {
+    let password = request.headers.get('x-admin-password') || url.searchParams.get('admin_key');
+    if (!password) {
+      try {
+        const body: any = await request.json();
+        password = body.password;
+      } catch {
+        // no body
+      }
+    }
+
+    const expectedPassword = env.ADMIN_PASSWORD_HASH;
+    if (!expectedPassword || !password || password !== expectedPassword) {
+      return jsonResponse({ valid: false, error: '管理員密碼錯誤' }, 401);
+    }
+
+    return jsonResponse({ valid: true, message: '管理員驗證成功' });
+  }
+
+  // PUT or PATCH /api/responses/:id (Protected Admin Endpoint: Modify individual data)
+  if (path.startsWith('/api/responses/') && (request.method === 'PUT' || request.method === 'PATCH')) {
+    const id = path.replace('/api/responses/', '').trim();
+    if (!id) {
+      return jsonResponse({ error: '缺少紀錄識別碼' }, 400);
+    }
+
+    const adminPassword = request.headers.get('x-admin-password') || url.searchParams.get('admin_key');
+    const expectedPassword = env.ADMIN_PASSWORD_HASH;
+
+    if (!expectedPassword || !adminPassword || adminPassword !== expectedPassword) {
+      return jsonResponse({ error: '未授權的管理操作：密碼錯誤或未提供' }, 401);
+    }
+
+    let body: any;
+    try {
+      body = await request.json();
+    } catch {
+      return jsonResponse({ error: '請求資料格式不正確（需為 JSON）' }, 400);
+    }
+
+    const { valid, error, cleanData } = validateSubmission(body);
+    if (!valid || !cleanData) {
+      return jsonResponse({ error: error || '表單驗證失敗' }, 400);
+    }
+
+    const updatedResponse = await updateSurveyResponse(env.DB, id, cleanData);
+    if (!updatedResponse) {
+      return jsonResponse({ error: '找不到該筆紀錄' }, 404);
+    }
+
+    // Broadcast update event
+    await broadcastEvent(env, {
+      type: 'UPDATE_RESPONSE',
+      payload: updatedResponse,
+    });
+
+    return jsonResponse({ message: '填答資料已成功修改', data: updatedResponse });
+  }
+
   // DELETE /api/responses/:id (Protected Admin Endpoint)
   if (path.startsWith('/api/responses/') && request.method === 'DELETE') {
     const id = path.replace('/api/responses/', '').trim();
@@ -246,7 +307,7 @@ function jsonResponse(data: any, status = 200): Response {
 function getCorsHeaders(): HeadersInit {
   return {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-admin-password',
   };
 }
@@ -254,7 +315,7 @@ function getCorsHeaders(): HeadersInit {
 function addCorsAndSecurityHeaders(res: Response): Response {
   const newHeaders = new Headers(res.headers);
   newHeaders.set('Access-Control-Allow-Origin', '*');
-  newHeaders.set('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  newHeaders.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
   newHeaders.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-admin-password');
   newHeaders.set('X-Content-Type-Options', 'nosniff');
   newHeaders.set('X-Frame-Options', 'DENY');

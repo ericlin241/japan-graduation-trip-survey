@@ -14,7 +14,9 @@ export function App() {
     wsStatus,
     refresh,
     submitResponse,
+    updateResponse,
     deleteResponse,
+    verifyAdminPassword,
   } = useSurveyData();
 
   return (
@@ -41,6 +43,8 @@ export function App() {
             isLoading={isLoading}
             onRefresh={refresh}
             onDeleteResponse={deleteResponse}
+            onUpdateResponse={updateResponse}
+            onVerifyAdminPassword={verifyAdminPassword}
             onNavigateToForm={() => setActiveTab('form')}
           />
         )}

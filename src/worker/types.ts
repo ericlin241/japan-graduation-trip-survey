@@ -38,7 +38,7 @@ export interface SurveyStats {
 }
 
 export interface WebSocketMessage {
-  type: 'INIT' | 'NEW_RESPONSE' | 'DELETE_RESPONSE' | 'STATS_UPDATE' | 'PING' | 'PONG';
+  type: 'INIT' | 'NEW_RESPONSE' | 'UPDATE_RESPONSE' | 'DELETE_RESPONSE' | 'STATS_UPDATE' | 'PING' | 'PONG';
   payload?: any;
 }
 
